@@ -57,7 +57,6 @@ G4GlobalMagFieldMessenger* B4cDetectorConstruction::fMagFieldMessenger = 0;
 B4cDetectorConstruction::B4cDetectorConstruction()
  : G4VUserDetectorConstruction(),
    fCheckOverlaps(true),
-  // fCheckOverlaps(false),
    fNofLayers(-1),
    fNofCells(-1)
 {
@@ -75,7 +74,7 @@ G4VPhysicalVolume* B4cDetectorConstruction::Construct()
 {
   // Define materials 
   DefineMaterials();
-  
+
   // Define volumes
   return DefineVolumes();
 }
@@ -89,7 +88,7 @@ void B4cDetectorConstruction::DefineMaterials()
   nistManager->FindOrBuildMaterial("G4_Pb");
   nistManager->FindOrBuildMaterial("G4_Fe");
   nistManager->FindOrBuildMaterial("G4_POLYSTYRENE");
-  
+
   // Liquid argon material
   G4double a;  // mass of a mole;
   G4double z;  // z=mean number of protons;  
@@ -108,27 +107,29 @@ void B4cDetectorConstruction::DefineMaterials()
 G4VPhysicalVolume* B4cDetectorConstruction::DefineVolumes()
 {
   // Geometry parameters
+  fNofLayers = 5;
+  fNofCells = 3;
   fNofLayers = 66;
-  fNofCells = 10;
+  fNofCells = 40;
   G4double absoThickness = 2.*mm;
   G4double gapThickness = 4.*mm;
   G4double topThickness = 7.*mm;
   G4double surThickness = 1.*mm;
-  G4double calorSizeXY  = 10.1*cm;
+  G4double calorSizeXY  = 1.01*cm;
 
   auto layerThickness = absoThickness + gapThickness;
   auto calorThickness = fNofLayers * layerThickness + gapThickness;
   auto totalThickness = calorThickness + topThickness + surThickness;
   auto worldSizeXY = 1.2 * calorSizeXY * fNofCells;
-  auto worldSizeZ  = 1.2 * totalThickness; 
-  
+  auto worldSizeZ  = 1.2 * totalThickness;
+
   // Get materials
   auto defaultMaterial = G4Material::GetMaterial("Galactic");
   auto absorberMaterial = G4Material::GetMaterial("G4_Pb");
   auto gapMaterial = G4Material::GetMaterial("G4_POLYSTYRENE");
   auto topMaterial = G4Material::GetMaterial("G4_POLYSTYRENE");
   auto surMaterial = G4Material::GetMaterial("G4_Fe");
-  
+
   if ( ! defaultMaterial || ! absorberMaterial || ! gapMaterial || ! topMaterial || ! surMaterial ) {
     G4ExceptionDescription msg;
     msg << "Cannot retrieve materials already defined."; 
@@ -159,7 +160,95 @@ G4VPhysicalVolume* B4cDetectorConstruction::DefineVolumes()
                  false,            // no boolean operation
                  0,                // copy number
                  fCheckOverlaps);  // checking overlaps 
-  
+
+  //                               
+  // Calorimeter
+  //  
+  auto xycalorimeterS
+    = new G4Box("xabsoCalorimeter",     // its name
+                 calorSizeXY/2 * fNofCells, calorSizeXY/2 * fNofCells, calorThickness/2); // its size
+
+  auto xycalorLV
+    = new G4LogicalVolume(
+                 xycalorimeterS,     // its solid
+                 defaultMaterial,  // its material
+                 "xabsoCalorimeter");   // its name
+
+  new G4PVPlacement(
+                 0,                // no rotation
+                 G4ThreeVector(),  // at (0,0,0)
+                 xycalorLV,          // its logical volume                         
+                 "xabsoCalorimeter",    // its name
+                 worldLV,          // its mother  volume
+                 false,            // no boolean operation
+                 0,                // copy number
+                 fCheckOverlaps);  // checking overlaps
+
+  //
+  // Layer
+  //
+  auto xylayerS
+    = new G4Box("xabsoLayer",           // its name
+                 calorSizeXY/2 * fNofCells, calorSizeXY/2, calorThickness/2); //its size
+
+  auto xylayerLV
+    = new G4LogicalVolume(
+                 xylayerS,           // its solid
+                 defaultMaterial,  // its material
+                 "xabsoLayer");         // its name
+
+  new G4PVReplica(
+                 "xabsoLayer",      // its name
+                 xylayerLV,      // its logical volume
+                 xycalorLV,      // its mother
+                 kYAxis,           // axis of replication
+                 fNofCells,        // number of replica
+                 calorSizeXY);     // witdth of replica
+
+  //                               
+  // Calorimeter
+  //  
+  auto xcalorimeterS
+    = new G4Box("xabsoCalorimeter",     // its name
+                 calorSizeXY/2 * fNofCells, calorSizeXY/2, calorThickness/2); // its size
+
+  auto xcalorLV
+    = new G4LogicalVolume(
+                 xcalorimeterS,     // its solid
+                 defaultMaterial,  // its material
+                 "xabsoCalorimeter");   // its name
+
+  new G4PVPlacement(
+                 0,                // no rotation
+                 G4ThreeVector(),  // at (0,0,0)
+                 xcalorLV,          // its logical volume                         
+                 "xabsoCalorimeter",    // its name
+                 xylayerLV,          // its mother  volume
+                 false,            // no boolean operation
+                 0,                // copy number
+                 fCheckOverlaps);  // checking overlaps
+
+  //
+  // Layer
+  //
+  auto xlayerS
+    = new G4Box("xabsoLayer",           // its name
+                 calorSizeXY/2, calorSizeXY/2, calorThickness/2); //its size
+
+  auto xlayerLV
+    = new G4LogicalVolume(
+                 xlayerS,           // its solid
+                 defaultMaterial,  // its material
+                 "xabsoLayer");         // its name
+
+  new G4PVReplica(
+                 "xabsoLayer",      // its name
+                 xlayerLV,      // its logical volume
+                 xcalorLV,      // its mother
+                 kXAxis,           // axis of replication
+                 fNofCells,        // number of replica
+                 calorSizeXY);     // witdth of replica
+
   //                               
   // Calorimeter
   //  
@@ -178,11 +267,11 @@ G4VPhysicalVolume* B4cDetectorConstruction::DefineVolumes()
                  G4ThreeVector(),  // at (0,0,0)
                  calorLVabso,          // its logical volume                         
                  "absoCalorimeter",    // its name
-                 worldLV,          // its mother  volume
+                 xlayerLV,         // its mother  volume
                  false,            // no boolean operation
                  0,                // copy number
                  fCheckOverlaps);  // checking overlaps
-  
+
   //
   // Layer
   //
@@ -294,6 +383,98 @@ G4VPhysicalVolume* B4cDetectorConstruction::DefineVolumes()
                  0,                // copy number
                  fCheckOverlaps);  // checking overlaps 
 
+  //                               
+  // Plastic
+  //
+  auto plasticSl 
+    = new G4Box("Plasticl",             // its name
+                 calorSizeXY/2 * fNofCells, calorSizeXY/2 * fNofCells, topThickness/2); // its size
+
+  auto plasticLVl
+    = new G4LogicalVolume(
+                 plasticSl,             // its solid
+                 topMaterial,      // its material
+                 "PlasticLVl");         // its name
+
+  new G4PVPlacement(
+                 0,                // no rotation
+                 G4ThreeVector(0, 0, calorThickness/2 + topThickness/2),  // its position
+                 plasticLVl,            // its logical volume                         
+                 "Plasticl",            // its name
+                 worldLV,       // its mother  volume
+                 false,            // no boolean operation
+                 0,                // copy number
+                 fCheckOverlaps);  // checking overlaps 
+
+  //                               
+  // Plastic
+  //
+  auto plasticSr
+    = new G4Box("Plasticr",             // its name
+                 calorSizeXY/2 * fNofCells, calorSizeXY/2 * fNofCells, topThickness/2); // its size
+
+  auto plasticLVr
+    = new G4LogicalVolume(
+                 plasticSr,             // its solid
+                 topMaterial,      // its material
+                 "PlasticLVr");         // its name
+
+  new G4PVPlacement(
+                 0,                // no rotation
+                 G4ThreeVector(0, 0, -(calorThickness/2 + topThickness/2)),  // its position
+                 plasticLVr,            // its logical volume                         
+                 "Plasticr",            // its name
+                 worldLV,       // its mother  volume
+                 false,            // no boolean operation
+                 0,                // copy number
+                 fCheckOverlaps);  // checking overlaps 
+
+  //                               
+  // Fe
+  //
+  auto feSl 
+    = new G4Box("Fel",             // its name
+                 calorSizeXY/2 * fNofCells, calorSizeXY/2 * fNofCells, surThickness/2); // its size
+
+  auto feLVl
+    = new G4LogicalVolume(
+                 feSl,             // its solid
+                 surMaterial,      // its material
+                 "FeLVl");         // its name
+
+  new G4PVPlacement(
+                 0,                // no rotation
+                 G4ThreeVector(0, 0, calorThickness/2 + topThickness + surThickness/2),  // its position
+                 feLVl,            // its logical volume                         
+                 "Fel",            // its name
+                 worldLV,       // its mother  volume
+                 false,            // no boolean operation
+                 0,                // copy number
+                 fCheckOverlaps);  // checking overlaps 
+
+  //                               
+  // Fe
+  //
+  auto feSr
+    = new G4Box("Fer",             // its name
+                 calorSizeXY/2 * fNofCells, calorSizeXY/2 * fNofCells, surThickness/2); // its size
+
+  auto feLVr
+    = new G4LogicalVolume(
+                 feSr,             // its solid
+                 surMaterial,      // its material
+                 "FeLVr");         // its name
+
+  new G4PVPlacement(
+                 0,                // no rotation
+                 G4ThreeVector(0, 0, -(calorThickness/2 + topThickness + surThickness/2)),  // its position
+                 feLVr,            // its logical volume                         
+                 "Fer",            // its name
+                 worldLV,       // its mother  volume
+                 false,            // no boolean operation
+                 0,                // copy number
+                 fCheckOverlaps);  // checking overlaps 
+
   //
   // print parameters
   //
@@ -305,7 +486,7 @@ G4VPhysicalVolume* B4cDetectorConstruction::DefineVolumes()
     << " + "
     << gapThickness/mm << "mm of " << gapMaterial->GetName() << " ] " << G4endl
     << "------------------------------------------------------------" << G4endl;
-  
+
   //                                        
   // Visualization attributes
   //
@@ -347,12 +528,12 @@ void B4cDetectorConstruction::ConstructSDandField()
   // Create global magnetic field messenger.
   // Uniform magnetic field is then created automatically if
   // the field value is not zero.
-  G4ThreeVector fieldValue;
-  fMagFieldMessenger = new G4GlobalMagFieldMessenger(fieldValue);
-  fMagFieldMessenger->SetVerboseLevel(1);
-  
-  // Register the field messenger for deleting
-  G4AutoDelete::Register(fMagFieldMessenger);
+  // G4ThreeVector fieldValue;
+  // fMagFieldMessenger = new G4GlobalMagFieldMessenger(fieldValue);
+  // fMagFieldMessenger->SetVerboseLevel(1);
+
+  // // Register the field messenger for deleting
+  // G4AutoDelete::Register(fMagFieldMessenger);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

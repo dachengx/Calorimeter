@@ -32,6 +32,7 @@
 #include "G4Step.hh"
 #include "G4ThreeVector.hh"
 #include "G4SDManager.hh"
+#include "G4VTouchable.hh"
 #include "G4ios.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -80,6 +81,9 @@ G4bool B4cCalorimeterSD::ProcessHits(G4Step* step,
 {  
   // energy deposit
   auto edep = step->GetTotalEnergyDeposit();
+  auto touchable = (step->GetPreStepPoint()->GetTouchable());
+  auto a0 = touchable->GetVolume(0)->GetName();
+  // G4cout << a0 << G4endl;
   
   // step length
   G4double stepLength = 0.;
@@ -89,16 +93,24 @@ G4bool B4cCalorimeterSD::ProcessHits(G4Step* step,
 
   if ( edep==0. && stepLength == 0. ) return false;      
 
-  auto touchable = (step->GetPreStepPoint()->GetTouchable());
+  // auto touchable = (step->GetPreStepPoint()->GetTouchable());
+  auto z = touchable->GetTranslation();
+  // auto a5 = touchable->GetVolume(3)->GetName();
+  // auto a3 = touchable->GetVolume(2)->GetName();
+  // auto a1 = touchable->GetVolume(1)->GetName();
     
   // Get calorimeter cell id 
+  auto yNumber = touchable->GetReplicaNumber(3);
+  auto xNumber = touchable->GetReplicaNumber(2);
   auto layerNumber = touchable->GetReplicaNumber(1);
-  
+  // G4cout << yNumber << "-" << xNumber << "-" << layerNumber << G4endl;
+
+  auto cellID = yNumber * 10 * 67 + xNumber * 67 + layerNumber;
   // Get hit accounting data for this cell
-  auto hit = (*fHitsCollection)[layerNumber];
+  auto hit = (*fHitsCollection)[cellID];
   if ( ! hit ) {
     G4ExceptionDescription msg;
-    msg << "Cannot access hit " << layerNumber; 
+    msg << "Cannot access hit " << cellID; 
     G4Exception("B4cCalorimeterSD::ProcessHits()",
       "MyCode0004", FatalException, msg);
   }         
@@ -108,6 +120,7 @@ G4bool B4cCalorimeterSD::ProcessHits(G4Step* step,
     = (*fHitsCollection)[fHitsCollection->entries()-1];
   
   // Add values
+  // G4cout << edep << " energy" << G4endl;
   hit->Add(edep, stepLength);
   hitTotal->Add(edep, stepLength); 
       

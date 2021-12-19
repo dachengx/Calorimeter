@@ -55,6 +55,7 @@ B4RunAction::B4RunAction()
   //analysisManager->SetNtupleDirectoryName("ntuple");
   analysisManager->SetVerboseLevel(1);
   analysisManager->SetNtupleMerging(true);
+  analysisManager->SetFileName("B5");
     // Note: merging ntuples is available only with Root output
 
   // Creating ntuple
@@ -92,9 +93,7 @@ void B4RunAction::BeginOfRunAction(const G4Run* /*run*/)
   auto analysisManager = G4AnalysisManager::Instance();
 
   // Open an output file
-  //
-  G4String fileName = "B4";
-  analysisManager->OpenFile(fileName);
+  analysisManager->OpenFile();
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

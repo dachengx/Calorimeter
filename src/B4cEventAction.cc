@@ -72,20 +72,6 @@ B4cEventAction::GetHitsCollection(G4int hcID,
   }         
 
   return hitsCollection;
-}    
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-void B4cEventAction::PrintEventStatistics(
-                              G4double gapEdep, G4double gapTrackLength) const
-{
-  // print event statistics
-  G4cout
-     << "        Gap: total energy: " 
-     << std::setw(7) << G4BestUnit(gapEdep, "Energy")
-     << "       total track length: " 
-     << std::setw(7) << G4BestUnit(gapTrackLength, "Length")
-     << G4endl;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

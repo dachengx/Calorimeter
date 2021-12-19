@@ -73,12 +73,6 @@ class B4cDetectorConstruction : public G4VUserDetectorConstruction
     //
     void DefineMaterials();
     G4VPhysicalVolume* DefineVolumes();
-  
-    // data members
-    //
-    static G4ThreadLocal G4GlobalMagFieldMessenger*  fMagFieldMessenger; 
-                                      // magnetic field messenger
-
     G4bool  fCheckOverlaps; // option to activate checking of volumes overlaps
 };
 

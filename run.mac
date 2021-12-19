@@ -8,9 +8,6 @@
 #
 # Initialize kernel
 /run/initialize
-# /vis/viewer/set/autoRefresh true
-# /vis/scene/endOfEventAction accumulate
-/vis/verbose errors
 /tracking/verbose 0
 /run/printProgress 200
 
@@ -26,21 +23,27 @@
 /gps/pos/centre 0 0 -7 m
 
 /gps/ene/mono 1 GeV
-/run/beamOn 1
+/analysis/setFileName gamma_1
+/run/beamOn 1000
 
 /gps/ene/mono 2 GeV
+/analysis/setFileName gamma_2
 /run/beamOn 1000
 
 /gps/ene/mono 5 GeV
+/analysis/setFileName gamma_5
 /run/beamOn 1000
 
 /gps/ene/mono 10 GeV
+/analysis/setFileName gamma_10
 /run/beamOn 1000
 
 /gps/ene/mono 50 GeV
+/analysis/setFileName gamma_50
 /run/beamOn 1000
 
 /gps/ene/mono 100 GeV
+/analysis/setFileName gamma_100
 /run/beamOn 1000
 
 #
@@ -49,6 +52,7 @@
 /gps/direction 0 0 1
 /gps/pos/centre 0 0 -7 m
 /gps/ene/mono 5 GeV
+/analysis/setFileName electron
 /run/beamOn 1000
 
 #
@@ -57,4 +61,5 @@
 /gps/direction 0 0 1
 /gps/pos/centre 0 0 -7 m
 /gps/ene/mono 5 GeV
+/analysis/setFileName pi0
 /run/beamOn 1000

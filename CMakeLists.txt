@@ -51,8 +51,7 @@ set(EXAMPLEB4C_SCRIPTS
   init_vis.mac
   plotHisto.C
   plotNtuple.C
-  run1.mac
-  run2.mac
+  run.mac
   vis.mac
   )
 

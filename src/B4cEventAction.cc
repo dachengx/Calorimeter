@@ -106,17 +106,12 @@ void B4cEventAction::EndOfEventAction(const G4Event* event)
   // Get hits collections
   auto gapHC = GetHitsCollection(fGapHCID, event);
 
-  // Get hit with total values
-  auto gapHit = (*gapHC)[gapHC->entries()-1];
-
   // Print per event (modulo n)
   //
   auto eventID = event->GetEventID();
   auto printModulo = G4RunManager::GetRunManager()->GetPrintProgress();
   if ( ( printModulo > 0 ) && ( eventID % printModulo == 0 ) ) {
-    G4cout << "---> End of event: " << eventID << G4endl;     
-
-    PrintEventStatistics(gapHit->GetEdep(), gapHit->GetTrackLength());
+    G4cout << "---> End of event: " << eventID << G4endl;
   }  
   
   // Fill histograms, ntuple
@@ -124,10 +119,6 @@ void B4cEventAction::EndOfEventAction(const G4Event* event)
 
   // get analysis manager
   auto analysisManager = G4AnalysisManager::Instance();
-
-  // fill histograms
-  analysisManager->FillH1(0, gapHit->GetEdep());
-  analysisManager->FillH1(1, gapHit->GetTrackLength());
   
   // fill ntuple
   G4int nCells = gapHC->entries()-1;

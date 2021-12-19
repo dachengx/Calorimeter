@@ -97,8 +97,6 @@ G4bool B4cCalorimeterSD::ProcessHits(G4Step* step,
 
   // auto touchable = (step->GetPreStepPoint()->GetTouchable());
   auto z = touchable->GetTranslation();
-  // auto a5 = touchable->GetVolume(3)->GetName();
-  // auto a3 = touchable->GetVolume(2)->GetName();
   // auto a1 = touchable->GetVolume(1)->GetName();
     
   // Get calorimeter cell id 
@@ -115,16 +113,11 @@ G4bool B4cCalorimeterSD::ProcessHits(G4Step* step,
     msg << "Cannot access hit " << cellID; 
     G4Exception("B4cCalorimeterSD::ProcessHits()",
       "MyCode0004", FatalException, msg);
-  }         
-
-  // Get hit for total accounting
-  auto hitTotal 
-    = (*fHitsCollection)[fHitsCollection->entries()-1];
+  }
   
   // Add values
   // G4cout << edep << " energy" << G4endl;
   hit->Add(edep, stepLength);
-  hitTotal->Add(edep, stepLength); 
       
   return true;
 }

@@ -56,9 +56,7 @@ public:
   void SetRandomFlag(G4bool value);
 
 private:
-  G4ParticleGun*  fParticleGun; // G4 particle gun
-// private:
-//   G4GeneralParticleSource* fParticleGun;
+  G4GeneralParticleSource* fParticleGun; // G4 particle gun
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

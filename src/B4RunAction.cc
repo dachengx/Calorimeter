@@ -57,13 +57,6 @@ B4RunAction::B4RunAction()
   analysisManager->SetNtupleMerging(true);
     // Note: merging ntuples is available only with Root output
 
-  // Book histograms, ntuple
-  //
-  
-  // Creating histograms
-  analysisManager->CreateH1("Egap","Edep in gap", 100, 0., 200*MeV);
-  analysisManager->CreateH1("Lgap","trackL in gap", 100, 0., 50*cm);
-
   // Creating ntuple
   // G4int ntupleID = 
   // G4int eventID = analysisManager->CreateNtupleDColumn("Nevent");
@@ -125,25 +118,6 @@ void B4RunAction::EndOfRunAction(const G4Run* /*run*/)
     analysisManager->FillNtupleFColumn(1, 1, ij * B4cDetectorConstruction::calorSizeXY + yorigin);
     analysisManager->FillNtupleFColumn(1, 2, ik * (B4cDetectorConstruction::absoThickness + B4cDetectorConstruction::gapThickness) + zorigin);
     analysisManager->AddNtupleRow(1);
-  }
-
-  if ( analysisManager->GetH1(0) ) {
-    G4cout << G4endl << " ----> print histograms statistic ";
-    if(isMaster) {
-      G4cout << "for the entire run " << G4endl << G4endl; 
-    }
-    else {
-      G4cout << "for the local thread " << G4endl << G4endl; 
-    }
-    
-    G4cout << " EGap : mean = " 
-       << G4BestUnit(analysisManager->GetH1(0)->mean(), "Energy") 
-       << " rms = " 
-       << G4BestUnit(analysisManager->GetH1(0)->rms(),  "Energy") << G4endl;
-    G4cout << " LGap : mean = " 
-      << G4BestUnit(analysisManager->GetH1(1)->mean(), "Length") 
-      << " rms = " 
-      << G4BestUnit(analysisManager->GetH1(1)->rms(),  "Length") << G4endl;
   }
 
   // save histograms & ntuple

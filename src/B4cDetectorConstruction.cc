@@ -234,7 +234,7 @@ G4VPhysicalVolume* B4cDetectorConstruction::DefineVolumes()
   auto layerLVgap
     = new G4LogicalVolume(
                  layerSgap,      // its solid
-                 gapMaterial,    // its material
+                 absorberMaterial,    // its material
                  "gapLayerLV");    // its name
 
   new G4PVReplica(
@@ -379,6 +379,7 @@ G4VPhysicalVolume* B4cDetectorConstruction::DefineVolumes()
 
   auto simpleBoxVisAtt= new G4VisAttributes(G4Colour(1.0,1.0,1.0));
   simpleBoxVisAtt->SetVisibility(true);
+  xycalorLV->SetVisAttributes(simpleBoxVisAtt);
 
   //
   // Always return the physical World

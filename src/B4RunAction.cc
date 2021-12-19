@@ -29,6 +29,7 @@
 
 #include "B4RunAction.hh"
 #include "B4Analysis.hh"
+#include "B4cDetectorConstruction.hh"
 
 #include "G4Run.hh"
 #include "G4RunManager.hh"
@@ -65,13 +66,19 @@ B4RunAction::B4RunAction()
 
   // Creating ntuple
   // G4int ntupleID = 
-  analysisManager->CreateNtuple("Energy", "Edep");
   // G4int eventID = analysisManager->CreateNtupleDColumn("Nevent");
-  G4int nCells = 67 * 10 * 10;
+  G4int nCells = B4cDetectorConstruction::fNofLayers * B4cDetectorConstruction::fNofCells * B4cDetectorConstruction::fNofCells;
+  analysisManager->CreateNtuple("Energy", "Edep");
   for (G4int i=0; i<nCells; i++ ) {
-    analysisManager->CreateNtupleFColumn('e' + std::to_string(i));
+    analysisManager->CreateNtupleFColumn(0, "e" + std::to_string(i));
   }
-  analysisManager->FinishNtuple();
+  analysisManager->FinishNtuple(0);
+
+  analysisManager->CreateNtuple("XYZ", "Position");
+  analysisManager->CreateNtupleFColumn(1, "x");
+  analysisManager->CreateNtupleFColumn(1, "y");
+  analysisManager->CreateNtupleFColumn(1, "z");
+  analysisManager->FinishNtuple(1);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -104,6 +111,22 @@ void B4RunAction::EndOfRunAction(const G4Run* /*run*/)
   // print histogram statistics
   //
   auto analysisManager = G4AnalysisManager::Instance();
+  auto nCells = B4cDetectorConstruction::fNofLayers * B4cDetectorConstruction::fNofCells * B4cDetectorConstruction::fNofCells;
+  auto calorThickness = B4cDetectorConstruction::fNofLayers * (B4cDetectorConstruction::absoThickness + B4cDetectorConstruction::gapThickness) - B4cDetectorConstruction::absoThickness;
+  auto xorigin = -B4cDetectorConstruction::calorSizeXY * B4cDetectorConstruction::fNofCells / 2 + B4cDetectorConstruction::calorSizeXY / 2;
+  auto yorigin = -B4cDetectorConstruction::calorSizeXY * B4cDetectorConstruction::fNofCells / 2 + B4cDetectorConstruction::calorSizeXY / 2;
+  auto zorigin = -calorThickness / 2 + B4cDetectorConstruction::gapThickness / 2;
+
+  for (G4int i=0; i<nCells; i++ ) {
+    int ii = i / (B4cDetectorConstruction::fNofLayers * B4cDetectorConstruction::fNofCells);
+    int ij = i % (B4cDetectorConstruction::fNofLayers * B4cDetectorConstruction::fNofCells) / B4cDetectorConstruction::fNofLayers;
+    int ik = i % B4cDetectorConstruction::fNofLayers;
+    analysisManager->FillNtupleFColumn(1, 0, ii * B4cDetectorConstruction::calorSizeXY + xorigin);
+    analysisManager->FillNtupleFColumn(1, 1, ij * B4cDetectorConstruction::calorSizeXY + yorigin);
+    analysisManager->FillNtupleFColumn(1, 2, ik * (B4cDetectorConstruction::absoThickness + B4cDetectorConstruction::gapThickness) + zorigin);
+    analysisManager->AddNtupleRow(1);
+  }
+
   if ( analysisManager->GetH1(0) ) {
     G4cout << G4endl << " ----> print histograms statistic ";
     if(isMaster) {

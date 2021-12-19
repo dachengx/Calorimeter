@@ -28,6 +28,8 @@
 /// \brief Implementation of the B4cCalorimeterSD class
 
 #include "B4cCalorimeterSD.hh"
+#include "B4cDetectorConstruction.hh"
+
 #include "G4HCofThisEvent.hh"
 #include "G4Step.hh"
 #include "G4ThreeVector.hh"
@@ -100,12 +102,12 @@ G4bool B4cCalorimeterSD::ProcessHits(G4Step* step,
   // auto a1 = touchable->GetVolume(1)->GetName();
     
   // Get calorimeter cell id 
-  auto yNumber = touchable->GetReplicaNumber(3);
-  auto xNumber = touchable->GetReplicaNumber(2);
+  auto xNumber = touchable->GetReplicaNumber(3);
+  auto yNumber = touchable->GetReplicaNumber(2);
   auto layerNumber = touchable->GetReplicaNumber(1);
-  // G4cout << yNumber << "-" << xNumber << "-" << layerNumber << G4endl;
+  // G4cout << xNumber << "-" << yNumber << "-" << layerNumber << G4endl;
 
-  auto cellID = yNumber * 10 * 67 + xNumber * 67 + layerNumber;
+  auto cellID = xNumber * B4cDetectorConstruction::fNofCells * B4cDetectorConstruction::fNofLayers + yNumber * B4cDetectorConstruction::fNofLayers + layerNumber;
   // Get hit accounting data for this cell
   auto hit = (*fHitsCollection)[cellID];
   if ( ! hit ) {

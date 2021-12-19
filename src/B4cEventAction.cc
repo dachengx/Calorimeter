@@ -31,6 +31,7 @@
 #include "B4cCalorimeterSD.hh"
 #include "B4cCalorHit.hh"
 #include "B4Analysis.hh"
+#include "B4cDetectorConstruction.hh"
 
 #include "G4RunManager.hh"
 #include "G4Event.hh"
@@ -130,14 +131,21 @@ void B4cEventAction::EndOfEventAction(const G4Event* event)
   
   // fill ntuple
   G4int nCells = gapHC->entries()-1;
+  if (nCells != B4cDetectorConstruction::fNofLayers * B4cDetectorConstruction::fNofCells * B4cDetectorConstruction::fNofCells) {
+    std::ostringstream message;
+    message << "Sanity check: wrong solid extent." << G4endl
+            << "        Replicated geometry, logical volume: ";
+    G4Exception("G4SmartVoxelHeader::BuildReplicaVoxels", "GeomMgt0002", FatalException, message);
+  }
+  
   // G4cout << nCells << G4endl;
   for (G4int i=0; i<nCells; i++ ) {
     auto gapHiti = (*gapHC)[i];
     // if (gapHiti->GetEdep() > 0) { G4cout << i << "-" << gapHiti->GetEdep() << G4endl; }
-    analysisManager->FillNtupleFColumn(i, gapHiti->GetEdep());
+    analysisManager->FillNtupleFColumn(0, i, gapHiti->GetEdep());
     // analysisManager->FillNtupleDColumn(i, eventID);
   }
-  analysisManager->AddNtupleRow();
+  analysisManager->AddNtupleRow(0);
 }  
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

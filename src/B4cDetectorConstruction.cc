@@ -56,9 +56,7 @@ G4GlobalMagFieldMessenger* B4cDetectorConstruction::fMagFieldMessenger = 0;
 
 B4cDetectorConstruction::B4cDetectorConstruction()
  : G4VUserDetectorConstruction(),
-   fCheckOverlaps(true),
-   fNofLayers(-1),
-   fNofCells(-1)
+   fCheckOverlaps(true)
 {
 }
 
@@ -107,13 +105,8 @@ void B4cDetectorConstruction::DefineMaterials()
 G4VPhysicalVolume* B4cDetectorConstruction::DefineVolumes()
 {
   // Geometry parameters
-  fNofLayers = 67;
-  fNofCells = 10;
-  G4double absoThickness = 2.*mm;
-  G4double gapThickness = 4.*mm;
   G4double topThickness = 7.*mm;
   G4double surThickness = 1.*mm;
-  G4double calorSizeXY  = 40.4*mm;
 
   auto layerThickness = absoThickness + gapThickness;
   auto calorThickness = fNofLayers * layerThickness - absoThickness;
@@ -187,7 +180,7 @@ G4VPhysicalVolume* B4cDetectorConstruction::DefineVolumes()
   //
   auto xylayerS
     = new G4Box("xyLayer",           // its name
-                 calorSizeXY/2 * fNofCells, calorSizeXY/2, calorThickness/2); //its size
+                 calorSizeXY/2, calorSizeXY/2 * fNofCells, calorThickness/2); //its size
 
   auto xylayerLV
     = new G4LogicalVolume(
@@ -199,28 +192,28 @@ G4VPhysicalVolume* B4cDetectorConstruction::DefineVolumes()
                  "xyLayer",      // its name
                  xylayerLV,      // its logical volume
                  xycalorLV,      // its mother
-                 kYAxis,           // axis of replication
+                 kXAxis,           // axis of replication
                  fNofCells,        // number of replica
                  calorSizeXY);     // witdth of replica
 
   //
   // Layer
   //
-  auto xlayerS
+  auto ylayerS
     = new G4Box("xLayer",           // its name
                  calorSizeXY/2, calorSizeXY/2, calorThickness/2); //its size
 
-  auto xlayerLV
+  auto ylayerLV
     = new G4LogicalVolume(
-                 xlayerS,           // its solid
+                 ylayerS,           // its solid
                  absorberMaterial,  // its material
                  "xLayerLV");         // its name
 
   new G4PVReplica(
                  "xLayer",      // its name
-                 xlayerLV,      // its logical volume
+                 ylayerLV,      // its logical volume
                  xylayerLV,      // its mother
-                 kXAxis,           // axis of replication
+                 kYAxis,           // axis of replication
                  fNofCells,        // number of replica
                  calorSizeXY);     // witdth of replica
 
@@ -240,7 +233,7 @@ G4VPhysicalVolume* B4cDetectorConstruction::DefineVolumes()
   new G4PVReplica(
                  "gapLayer",       // its name
                  layerLVgap,       // its logical volume
-                 xlayerLV,       // its mother
+                 ylayerLV,       // its mother
                  kZAxis,           // axis of replication
                  fNofLayers,   // number of replica
                  layerThickness);  // witdth of replica

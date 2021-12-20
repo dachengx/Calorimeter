@@ -10,7 +10,7 @@
 # Run menu :
 /gui/addMenu run Run
 /gui/addButton run "beamOn 1" "/run/beamOn 1"
-/gui/addButton run run1 "/control/execute run1.mac"
+/gui/addButton run run "/control/execute run.mac"
 #
 # Gun menu :
 /gui/addMenu gun Gun

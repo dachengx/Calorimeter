@@ -49,8 +49,6 @@ set(EXAMPLEB4C_SCRIPTS
   exampleB4.in
   gui.mac
   init_vis.mac
-  plotHisto.C
-  plotNtuple.C
   run.mac
   vis.mac
   )

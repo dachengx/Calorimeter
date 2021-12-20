@@ -15,12 +15,13 @@
 /gps/particle gamma
 /gps/pos/type Point
 /gps/direction 0 0 1
+/gps/pos/centre 0 0 -5.2 m
+/gps/ang/rot1 -1 0 0
 /gps/ang/type cos
 /gps/ang/mintheta 0. rad
 /gps/ang/maxtheta 0.01 rad
 /gps/ang/minphi 0. deg
 /gps/ang/maxphi 360. deg
-/gps/pos/centre 0 0 -7 m
 
 /gps/ene/mono 1 GeV
 /analysis/setFileName gamma_1

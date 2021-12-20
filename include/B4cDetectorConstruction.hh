@@ -60,6 +60,8 @@ class B4cDetectorConstruction : public G4VUserDetectorConstruction
     static const G4int fNofCells = 10;      // number of cells
     static constexpr G4double absoThickness = 2.*mm;
     static constexpr G4double gapThickness = 4.*mm;
+    static constexpr G4double topThickness = 7.*mm;
+    static constexpr G4double surThickness = 1.*mm;
     static constexpr G4double calorSizeXY = 40.4*mm;
     B4cDetectorConstruction();
     virtual ~B4cDetectorConstruction();

@@ -62,7 +62,7 @@ class B4cCalorimeterSD : public G4VSensitiveDetector
 
   private:
     B4cCalorHitsCollection* fHitsCollection;
-    G4int  fNofCells;
+    G4int fNofCells;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

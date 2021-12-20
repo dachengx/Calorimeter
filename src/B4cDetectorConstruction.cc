@@ -100,14 +100,12 @@ void B4cDetectorConstruction::DefineMaterials()
 G4VPhysicalVolume* B4cDetectorConstruction::DefineVolumes()
 {
   // Geometry parameters
-  G4double topThickness = 7.*mm;
-  G4double surThickness = 1.*mm;
 
-  auto layerThickness = absoThickness + gapThickness;
-  auto calorThickness = fNofLayers * layerThickness - absoThickness;
-  auto totalThickness = calorThickness + topThickness + surThickness;
-  auto worldSizeXY = 1.2 * calorSizeXY * fNofCells;
-  auto worldSizeZ  = 1.2 * totalThickness;
+  G4double layerThickness = absoThickness + gapThickness;
+  G4double calorThickness = fNofLayers * layerThickness - absoThickness;
+  // G4double totalThickness = calorThickness + 2 * (topThickness + surThickness);
+  G4double worldSizeXY = 2 * calorSizeXY * fNofCells;
+  G4double worldSizeZ  = 12.*m;
 
   // Get materials
   auto defaultMaterial = G4Material::GetMaterial("Galactic");
@@ -134,7 +132,7 @@ G4VPhysicalVolume* B4cDetectorConstruction::DefineVolumes()
     = new G4LogicalVolume(
                  worldS,           // its solid
                  defaultMaterial,  // its material
-                 "World");         // its name
+                 "WorldLV");         // its name
 
   auto worldPV
     = new G4PVPlacement(
@@ -385,7 +383,7 @@ void B4cDetectorConstruction::ConstructSDandField()
   // Sensitive detectors
   //
 
-  auto gapSD 
+  auto gapSD
     = new B4cCalorimeterSD("GapSD", "GapHitsCollection", fNofLayers * fNofCells * fNofCells);
   G4SDManager::GetSDMpointer()->AddNewDetector(gapSD);
   SetSensitiveDetector("GapLV",gapSD);

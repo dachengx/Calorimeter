@@ -76,8 +76,23 @@ B4cEventAction::GetHitsCollection(G4int hcID,
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void B4cEventAction::BeginOfEventAction(const G4Event* /*event*/)
-{}
+void B4cEventAction::BeginOfEventAction(const G4Event* event)
+{
+  auto analysisManager = G4AnalysisManager::Instance();
+  G4PrimaryVertex* gpVertex = event->GetPrimaryVertex();
+	G4PrimaryParticle* gpParticle = gpVertex->GetPrimary();
+	G4ThreeVector pd = gpParticle->GetMomentumDirection();
+  auto detectorThickness = B4cDetectorConstruction::fNofLayers * (B4cDetectorConstruction::absoThickness + B4cDetectorConstruction::gapThickness) - B4cDetectorConstruction::absoThickness;
+  auto x = (-(gpVertex->GetZ0()) - detectorThickness / 2) * pd[0] / pd[2];
+  auto y = (-(gpVertex->GetZ0()) - detectorThickness / 2) * pd[1] / pd[2];
+  analysisManager->FillNtupleFColumn(2, 0, gpParticle->GetTotalEnergy()/MeV);
+  analysisManager->FillNtupleFColumn(2, 1, pd[0]);
+  analysisManager->FillNtupleFColumn(2, 2, pd[1]);
+  analysisManager->FillNtupleFColumn(2, 3, pd[2]);
+  analysisManager->FillNtupleFColumn(2, 4, x/mm);
+  analysisManager->FillNtupleFColumn(2, 5, y/mm);
+  analysisManager->AddNtupleRow(2);
+}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 

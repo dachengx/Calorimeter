@@ -29,6 +29,7 @@
 
 #include "B4cCalorimeterSD.hh"
 #include "B4cDetectorConstruction.hh"
+#include "B4Analysis.hh"
 
 #include "G4HCofThisEvent.hh"
 #include "G4Step.hh"
@@ -83,9 +84,7 @@ G4bool B4cCalorimeterSD::ProcessHits(G4Step* step,
 {  
   // energy deposit
   auto edep = step->GetTotalEnergyDeposit();
-  auto touchable = (step->GetPreStepPoint()->GetTouchable());
-  auto a0 = touchable->GetVolume(0)->GetName();
-  // G4cout << a0 << G4endl;
+  // G4Track* theTrack = step->GetTrack();
   
   // step length
   G4double stepLength = 0.;
@@ -93,12 +92,18 @@ G4bool B4cCalorimeterSD::ProcessHits(G4Step* step,
     stepLength = step->GetStepLength();
   }
 
-  if ( edep==0. && stepLength == 0. ) return false;      
+  if ( edep==0. && stepLength == 0. ) return false;
 
-  // auto touchable = (step->GetPreStepPoint()->GetTouchable());
-  auto z = touchable->GetTranslation();
+  auto prepoint = step->GetPreStepPoint();
+  // auto prepv = prepoint->GetPhysicalVolume();
+  auto touchable = (prepoint->GetTouchable());
+  // auto postpoint = step->GetPostStepPoint();
+  // auto postpv = postpoint->GetPhysicalVolume();
+  // G4cout << fFetoPl << G4endl;
+
+  // auto z = touchable->GetTranslation();
   // auto a1 = touchable->GetVolume(1)->GetName();
-    
+
   // Get calorimeter cell id 
   auto xNumber = touchable->GetReplicaNumber(3);
   auto yNumber = touchable->GetReplicaNumber(2);

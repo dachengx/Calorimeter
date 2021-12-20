@@ -62,7 +62,7 @@ B4RunAction::B4RunAction()
   // G4int ntupleID = 
   // G4int eventID = analysisManager->CreateNtupleDColumn("Nevent");
   G4int nCells = B4cDetectorConstruction::fNofLayers * B4cDetectorConstruction::fNofCells * B4cDetectorConstruction::fNofCells;
-  analysisManager->CreateNtuple("Energy", "Edep");
+  analysisManager->CreateNtuple("Energy3D", "Edep");
   for (G4int i=0; i<nCells; i++ ) {
     analysisManager->CreateNtupleFColumn(0, "e" + std::to_string(i));
   }
@@ -73,6 +73,28 @@ B4RunAction::B4RunAction()
   analysisManager->CreateNtupleFColumn(1, "y");
   analysisManager->CreateNtupleFColumn(1, "z");
   analysisManager->FinishNtuple(1);
+
+  analysisManager->CreateNtuple("Truth", "Truth");
+  analysisManager->CreateNtupleFColumn(2, "energy");
+  analysisManager->CreateNtupleFColumn(2, "px");
+  analysisManager->CreateNtupleFColumn(2, "py");
+  analysisManager->CreateNtupleFColumn(2, "pz");
+  analysisManager->CreateNtupleFColumn(2, "x");
+  analysisManager->CreateNtupleFColumn(2, "y");
+  analysisManager->FinishNtuple(2);
+
+  analysisManager->CreateNtuple("Energy2D", "Edep");
+  for (G4int i=0; i<nCells; i++ ) {
+    if ( i % B4cDetectorConstruction::fNofLayers == 0) {
+      analysisManager->CreateNtupleFColumn(3, "e" + std::to_string(i));
+    }
+  }
+  analysisManager->FinishNtuple(3);
+
+  analysisManager->CreateNtuple("XY", "Position");
+  analysisManager->CreateNtupleFColumn(4, "x");
+  analysisManager->CreateNtupleFColumn(4, "y");
+  analysisManager->FinishNtuple(4);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -113,9 +135,9 @@ void B4RunAction::EndOfRunAction(const G4Run* /*run*/)
     int ii = i / (B4cDetectorConstruction::fNofLayers * B4cDetectorConstruction::fNofCells);
     int ij = i % (B4cDetectorConstruction::fNofLayers * B4cDetectorConstruction::fNofCells) / B4cDetectorConstruction::fNofLayers;
     int ik = i % B4cDetectorConstruction::fNofLayers;
-    analysisManager->FillNtupleFColumn(1, 0, ii * B4cDetectorConstruction::calorSizeXY + xorigin);
-    analysisManager->FillNtupleFColumn(1, 1, ij * B4cDetectorConstruction::calorSizeXY + yorigin);
-    analysisManager->FillNtupleFColumn(1, 2, ik * (B4cDetectorConstruction::absoThickness + B4cDetectorConstruction::gapThickness) + zorigin);
+    analysisManager->FillNtupleFColumn(1, 0, (ii * B4cDetectorConstruction::calorSizeXY + xorigin) / mm);
+    analysisManager->FillNtupleFColumn(1, 1, (ij * B4cDetectorConstruction::calorSizeXY + yorigin) / mm);
+    analysisManager->FillNtupleFColumn(1, 2, (ik * (B4cDetectorConstruction::absoThickness + B4cDetectorConstruction::gapThickness) + zorigin) / mm);
     analysisManager->AddNtupleRow(1);
   }
 

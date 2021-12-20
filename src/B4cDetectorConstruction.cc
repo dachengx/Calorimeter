@@ -132,7 +132,7 @@ G4VPhysicalVolume* B4cDetectorConstruction::DefineVolumes()
     = new G4LogicalVolume(
                  worldS,           // its solid
                  defaultMaterial,  // its material
-                 "WorldLV");         // its name
+                 "World");         // its name
 
   auto worldPV
     = new G4PVPlacement(

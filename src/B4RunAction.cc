@@ -141,6 +141,15 @@ void B4RunAction::EndOfRunAction(const G4Run* /*run*/)
     analysisManager->AddNtupleRow(1);
   }
 
+  auto nCellsxy = B4cDetectorConstruction::fNofCells * B4cDetectorConstruction::fNofCells;
+  for (G4int i=0; i<nCellsxy; i++ ) {
+    int ii = i / B4cDetectorConstruction::fNofCells;
+    int ij = i % B4cDetectorConstruction::fNofCells;
+    analysisManager->FillNtupleFColumn(4, 0, (ii * B4cDetectorConstruction::calorSizeXY + xorigin) / mm);
+    analysisManager->FillNtupleFColumn(4, 1, (ij * B4cDetectorConstruction::calorSizeXY + yorigin) / mm);
+    analysisManager->AddNtupleRow(4);
+  }
+
   // save histograms & ntuple
   //
   analysisManager->Write();

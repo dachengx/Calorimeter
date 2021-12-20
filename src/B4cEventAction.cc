@@ -134,10 +134,25 @@ void B4cEventAction::EndOfEventAction(const G4Event* event)
   for (G4int i=0; i<nCells; i++ ) {
     auto gapHiti = (*gapHC)[i];
     // if (gapHiti->GetEdep() > 0) { G4cout << i << "-" << gapHiti->GetEdep() << G4endl; }
-    analysisManager->FillNtupleFColumn(0, i, gapHiti->GetEdep());
+    analysisManager->FillNtupleFColumn(0, i, gapHiti->GetEdep()/MeV);
     // analysisManager->FillNtupleDColumn(i, eventID);
   }
+
   analysisManager->AddNtupleRow(0);
+
+  G4double xydeposit;
+  for (G4int i=0; i<nCells; i++ ) {
+    auto gapHiti = (*gapHC)[i];
+    if ( i % B4cDetectorConstruction::fNofLayers == 0 ) {
+      xydeposit = 0;
+    }
+    xydeposit += gapHiti->GetEdep();
+    if ( (i + 1) % B4cDetectorConstruction::fNofLayers == 0 ) {
+      analysisManager->FillNtupleFColumn(3, i / B4cDetectorConstruction::fNofLayers, xydeposit / MeV);
+    }
+  }
+  analysisManager->AddNtupleRow(3);
+
 }  
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

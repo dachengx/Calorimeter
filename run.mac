@@ -61,6 +61,6 @@
 /gps/pos/type Point
 /gps/direction 0 0 1
 /gps/pos/centre 0 0 -7 m
-/gps/ene/mono 5 GeV
+/gps/ene/mono 10 GeV
 /analysis/setFileName pi0
-/run/beamOn 1000
+/run/beamOn 4000

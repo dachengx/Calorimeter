@@ -81,6 +81,7 @@
 # For file-based drivers, use this to create an empty detector view:
 #/vis/viewer/flush
 
+/vis/geometry/set/colour GapLV 0 1 1 1 .1
 /vis/geometry/set/colour PlasticLVr 0 0 0 1 .6
 /vis/geometry/set/colour PlasticLVl 0 0 0 1 .6
 /vis/geometry/set/colour FeLVl 0 1 0 0 .6
